@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Terrra Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        .row {
+            display: flex;
+            flex-direction: column;
+        }
+        .transaction {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin: 5px;
+            padding: 5px;
+            border: 1px solid;
+        }
+        .item {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <h1 class="header">Transactions Explorer</h1>
+        <a class="btn" href="#" @click="fetchTxs()">
+            <i v-if="isRefreshing" class="material-icons right">sync</i>
+            Refresh
+        </a>
+        <div class="row">
+            <div class="transaction" v-for="tx in txs">
+                <div class="item">
+                    <div class="item-title">Transaction Hash</div>
+                    <div class="item-content">{{tx.txhash.substr(0, 10)}}</div>
+                </div>
+                <div class="item">
+                    <div class="item-title">Gas Used</div>
+                    <div class="item-content">{{tx.gas_used}}</div>
+                </div>
+                <div class="item">
+                    <div class="item-title">Gas Wanted</div>
+                    <div class="item-content">{{tx.gas_wanted}}</div>
+                </div>
+                <div class="item">
+                    <div class="item-title">Height</div>
+                    <div class="item-content">{{tx.height}}</div>
+                </div>
+                <div class="item">
+                    <div class="item-title">Transaction Logs</div>
+                    <div class="item-content">{{tx.logs.length}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            isRefreshing: false,
+            txs: []
+        },
+        methods: {
+            fetchTxs(){
+                this.isRefreshing = true;
+                fetch('/api').then(response => response.json())
+                .then(result => {
+                    this.txs = result;
+                })
+                .finally(() => {
+                    this.isRefreshing = false;
+                })
+            }
+        }
+    })
+</script>
+</html>
